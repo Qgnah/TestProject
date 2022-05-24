@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript">
+function showbook(page){
+	$.ajax({
+		url:"bookServlet",
+		type:"post",
+		data:{"qf":2,"page":page},
+		dataType:"json",
+		success:function(data){
+			h="<tr><td>图书编号</td><td>图书名称</td><td>封面</td><td>价格</td><td>类型名称</td><td>入库时间</td><td>操作</td></tr>"
+				for(var i=0;i<data.list.length;i++){
+					h+="<tr>"+
+					"<td>"+data.list[i].bookno+"</td>"+
+					"<td>"+data.list[i].bookname+"</td>"+
+					"<td><img width='50' height='50' src='"+data.list[i].pic+"'></td>"+
+					"<td>"+data.list[i].price+"</td>"+
+					"<td>"+data.list[i].btname+"</td>"+
+					"<td>"+data.list[i].cometime+"</td>"+
+					"<td>"+
+					"<a onclick='updatas(&apos;"+data.list[i].bookno+"&apos;)'>修改</a>"+
+					"<a onclick='deletes(&apos;"+data.list[i].bookno+"&apos;)'>删除</a>"+
+					"</td>"+
+					"</tr>";
+				}
+				$("#booklist").html(h);
+				
+				var s=data.page-1>1?(data.page-1):1;
+				var x=data.page+1>data.sumpage?data.sumpage:data.page+1;
+				var f="<a href='javascript:void(0);' onclick='showbook(1)'>首页</a>"+
+					"<a href='javascript:void(0);' onclick='showbook("+s+")'>上一页</a>"+
+					"<a href='javascript:void(0);' onclick='showbook("+x+")'>下一页</a>"+
+					"<a href='javascript:void(0);' onclick='showbook("+data.sumpage+")'>末页</a>"+
+					"<a>当前页/总页数："+data.page+"/"+data.sumpage+"</a><input id='g' style='width:30px'><a onclick='gos()'>GO</a>";
+					$("#fy").html(f);
+		}
+	});	
+}
+function gos(){
+	var go=$("#g").val();//获取文本框里你输入的内容
+	showbook(go);
+}
+function deletes(no){
+	var f=confirm("确定要删除吗？");
+	if(f){
+		location.href="bookServlet?qf=3&&bookno="+no;
+	}else{
+		alert("取消删除");
+	}
+	
+}
+function updatas(no){
+	//alert("进入update");
+	location.href="updatebook.html?bookno="+no;
+}
+function dc(){
+	location.href="bookServlet?qf=6";
+}
+</script>
+</head>
+<input type="button" value="导出" onclick="dc()">
+<body onload="showbook(1)">
+
+<table id="booklist" border="1" width="700"></table>
+
+<p id="fy"></p>	
+</body>
+</html>

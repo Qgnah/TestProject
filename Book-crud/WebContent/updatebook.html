@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/geturl.js"></script>
+<script type="text/javascript">
+var bookno=UrlParm.parm("bookno");
+//alert(bookno);
+function showbooktype(){
+	//alert("123");
+	$.ajax({	
+		url:"booktypeServlet?qf=1",
+		type:"post",
+		dataType:"json",
+		success:function(data){
+			//alert(data);
+			var h="";
+			for(var i=0; i<data.length; i++){
+				if(data[i].id==bt){//这里不太懂
+					h+="<option selected='selected' value='"+data[i].id+"'>"+data[i].btname+"</option>"	
+				}else{
+					h+="<option value='"+data[i].id+"'>"+data[i].btname+"</option>"
+				}
+			}
+			$("#bt").html(h);
+		}
+	});
+}
+function getbook(){
+	$.ajax({
+		url:"bookServlet",
+		type:"post",
+		data:{"qf":4,"bookno":bookno},
+		dataType:"json",
+		success:function(data){
+			$("#bookno").val(data.bookno);
+			$("#bookname").val(data.bookname);
+			$("#price").val(data.price);
+			$("#cometime").val(data.cometime);
+			document.getElementById("getpic").src=data.pic;
+			bt=data.btid;
+		}
+	})
+}
+function loadall(){
+	getbook();
+	showbooktype();
+}
+</script>
+</head>
+<body onload="loadall()">
+<form action="bookServlet?qf=5" method="post">
+<p>图书编号：<input type="text" name="bookno" id="bookno"></p>
+<p>图书名称：<input type="text" name="bookname" id="bookname"></p>
+<p>图书价格：<input type="text" name="price" id="price"></p>
+<p>入库时间：<input type="text" name="cometime" id="cometime"></p>
+<p>图书类型：<select id="bt" name="booktypeid" id="booktypeid"></select></p>
+<p>原图片：<img id="getpic" alt="图片加载失败" src="" width="70" height="70"></p>
+<p><input type="submit" value="修改"></p>
+</form>
+</body>
+</html>
